@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA==" crossorigin="anonymous" referrerpolicy="no-referrer"/>
 </head>
 <body>
     <div id="app">
@@ -79,5 +80,75 @@
             @yield('content')
         </main>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    @if (session('resposta'))
+        @push('js')
+            <script type="text/javascript">
+                var status = @json(session('resposta')['status']);
+                var mensagem = @json(session('resposta')['mensagem']);                
+
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": true,
+                    "onclick": null,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+
+                switch (status) {
+                    case '200':
+                        toastr.success(mensagem, "Operação bem sucedida!");
+                        break;
+                    case '400':
+                        toastr.warning(mensagem, "Atenção!");
+                        break;
+                    case '500':
+                        toastr.error(mensagem, "Atenção!");
+                        break;
+                }
+            </script>
+        @endpush
+    @endif
+    @if ($errors->any())
+        @foreach (array_unique($errors->all()) as $error)
+            @push('js')
+                <script type="text/javascript">
+                    var mensagem = @json($error);
+
+                    toastr.options = {
+                        "closeButton": true,
+                        "debug": false,
+                        "newestOnTop": true,
+                        "progressBar": true,
+                        "positionClass": "toast-top-right",
+                        "preventDuplicates": true,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                    };
+
+                    toastr.warning(mensagem, "Atenção!");
+                </script>
+            @endpush
+        @endforeach
+    @endif
+    @stack('js')
 </body>
 </html>
